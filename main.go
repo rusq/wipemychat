@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -24,8 +25,8 @@ import (
 
 	"github.com/rusq/wipemychat/internal/mtp"
 	"github.com/rusq/wipemychat/internal/mtp/authflow"
-	"github.com/rusq/wipemychat/internal/sys"
 	"github.com/rusq/wipemychat/internal/tui"
+	"github.com/rusq/wipemychat/internal/waipu"
 )
 
 const cacheDirName = "tgmsg_revoker"
@@ -45,10 +46,15 @@ var _ = godotenv.Load() // load environment variables from .env, if present
 
 type Params struct {
 	CacheDirName string
-	ApiID        int
-	ApiHash      string
-	Phone        string
-	Reset        bool
+
+	ApiID   int
+	ApiHash string
+	Phone   string
+
+	Reset bool
+	List  bool
+
+	Batch chatIDs
 
 	Version bool
 	Verbose bool
@@ -80,6 +86,27 @@ func main() {
 	}
 }
 
+type chatIDs []int64
+
+func (c *chatIDs) Set(val string) error {
+	ss := strings.Split(val, ",")
+	var ids = make([]int64, 0, len(ss))
+
+	for _, sID := range ss {
+		id, err := strconv.ParseInt(sID, 10, 64)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, id)
+	}
+	*c = ids
+	return nil
+}
+
+func (c *chatIDs) String() string {
+	return fmt.Sprint([]int64(*c))
+}
+
 func parseCmdLine() (Params, error) {
 	var p = Params{CacheDirName: cacheDirName}
 	{
@@ -87,6 +114,8 @@ func parseCmdLine() (Params, error) {
 		flag.StringVar(&p.ApiHash, "api-token", osenv.Secret("APP_HASH", ""), "Telegram API token")
 		flag.StringVar(&p.Phone, "phone", osenv.Value("PHONE", ""), "phone `number` in international format for authentication (optional)")
 		flag.BoolVar(&p.Reset, "reset", false, "reset authentication")
+		flag.BoolVar(&p.List, "list", false, "list channels and their IDs")
+		flag.Var(&p.Batch, "wipe", "batch mode, specify comma separated chat IDs on the command line")
 
 		flag.BoolVar(&p.Version, "v", false, "print version and exit")
 		flag.BoolVar(&p.Verbose, "verbose", osenv.Value("DEBUG", "") != "", "verbose output")
@@ -127,7 +156,6 @@ func run(ctx context.Context, p Params) error {
 	}
 
 	header(os.Stdout)
-	fmt.Println()
 
 	sessStorage := session.FileStorage{Path: filepath.Join(p.cacheDir, "session.dat")}
 	apiCredsFile := filepath.Join(p.cacheDir, "telegram.dat")
@@ -144,18 +172,9 @@ func run(ctx context.Context, p Params) error {
 		SessionStorage: &sessStorage,
 	}
 
-	iface, err := sys.FindIface()
-	if err != nil {
-		return err
-	}
-	key, err := sys.IfaceMAC(iface)
-	if err != nil {
-		return err
-	}
-
 	cl, err := mtp.New(p.ApiID, p.ApiHash,
 		mtp.WithAuth(authflow.NewTermAuth(p.Phone)),
-		mtp.WithApiCredsFile(apiCredsFile, key),
+		mtp.WithApiCredsFile(apiCredsFile),
 		mtp.WithMTPOptions(opts),
 		mtp.WithDebug(p.Verbose),
 	)
@@ -180,7 +199,6 @@ func run(ctx context.Context, p Params) error {
 	chats, err := cl.GetChats(ctx)
 	close(done)
 	<-finished
-
 	if err != nil {
 		return err
 	}
@@ -189,9 +207,16 @@ func run(ctx context.Context, p Params) error {
 	})
 	dlog.Printf("got %d chats", len(chats))
 
-	tva := tui.New(cl)
-	if err := tva.Run(ctx, chats); err != nil {
-		return err
+	if p.List {
+		return waipu.List(ctx, os.Stdout, cl)
+	} else if len(p.Batch) > 0 {
+		return waipu.Batch(ctx, cl, []int64(p.Batch))
+	} else {
+		// run UI
+		tva := tui.New(cl)
+		if err := tva.Run(ctx, chats); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -236,6 +261,7 @@ func header(w io.Writer) {
 		"%s\n%s\n%s\n", versionSig, strings.Repeat("-", len(versionSig)),
 		color.New(color.Italic).Sprint("In loving memory of V. Gorban, 1967-2022."),
 	)
+	fmt.Fprintln(w)
 }
 
 func ver(w io.Writer) {

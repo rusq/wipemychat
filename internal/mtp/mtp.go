@@ -101,9 +101,9 @@ func WithAuth(flow authflow.FullAuthFlow) Option {
 	}
 }
 
-func WithApiCredsFile(path string, passphrase []byte) Option {
+func WithApiCredsFile(path string) Option {
 	return func(c *Client) {
-		c.creds = credsStorage{filename: path, passphrase: passphrase}
+		c.creds = credsStorage{filename: path}
 	}
 }
 

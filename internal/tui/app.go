@@ -5,13 +5,13 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/gotd/td/telegram/query/messages"
 	"github.com/looplab/fsm"
 	"github.com/rivo/tview"
 	"github.com/rusq/dlog"
 	"github.com/rusq/osenv/v2"
 
 	"github.com/rusq/wipemychat/internal/mtp"
+	"github.com/rusq/wipemychat/internal/waipu"
 )
 
 const (
@@ -22,18 +22,12 @@ const (
 
 type App struct {
 	tva *tview.Application
-	tg  telegramer
+	tg  waipu.Telegramer
 	log *dlog.Logger
 	fsm *fsm.FSM
 
 	pages *tview.Pages
 	view  views
-}
-
-type telegramer interface {
-	GetChats(ctx context.Context) ([]mtp.Entity, error)
-	SearchAllMyMessages(ctx context.Context, dlg mtp.Entity, cb func(n int)) ([]messages.Elem, error)
-	DeleteMessages(ctx context.Context, dlg mtp.Entity, messages []messages.Elem) (int, error)
 }
 
 type views struct {
@@ -46,7 +40,7 @@ type views struct {
 	tvLog   *tview.TextView
 }
 
-func New(tg telegramer) *App {
+func New(tg waipu.Telegramer) *App {
 	app := &App{
 		tva: tview.NewApplication(),
 		tg:  tg,

@@ -5,16 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/rusq/wipemychat/internal/secure"
 )
-
-func init() {
-	mac := []byte{0xde, 0xfe, 0xc8, 0xed, 0xba, 0xbe}
-	if err := secure.SetPassphrase(mac); err != nil {
-		panic(err)
-	}
-}
 
 func Test_encryptDecrypt(t *testing.T) {
 	var (
