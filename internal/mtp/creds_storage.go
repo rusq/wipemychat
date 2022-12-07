@@ -3,31 +3,26 @@ package mtp
 import (
 	"encoding/json"
 	"io"
-	"os"
 
-	"github.com/rusq/wipemychat/internal/secure"
+	"github.com/rusq/encio"
 )
 
 type credsStorage struct {
-	filename   string
-	passphrase []byte
+	filename string
 }
 
 // creds is the structure of data in the storage.
 type creds struct {
-	ApiID   secure.Int    `json:"api_id,omitempty"`
-	ApiHash secure.String `json:"api_hash,omitempty"`
+	ApiID   int    `json:"api_id,omitempty"`
+	ApiHash string `json:"api_hash,omitempty"`
 }
 
 func (cs credsStorage) IsAvailable() bool {
-	return cs.filename != "" && len(cs.passphrase) > 0
+	return cs.filename != ""
 }
 
 func (cs credsStorage) Save(apiID int, apiHash string) error {
-	if err := secure.SetPassphrase(cs.passphrase); err != nil {
-		return err
-	}
-	f, err := os.Create(cs.filename)
+	f, err := encio.Create(cs.filename)
 	if err != nil {
 		return err
 	}
@@ -38,8 +33,8 @@ func (cs credsStorage) Save(apiID int, apiHash string) error {
 
 func (cs credsStorage) write(f io.Writer, apiID int, apiHash string) error {
 	creds := creds{
-		ApiID:   secure.Int(apiID),
-		ApiHash: secure.String(apiHash),
+		ApiID:   apiID,
+		ApiHash: apiHash,
 	}
 
 	enc := json.NewEncoder(f)
@@ -50,10 +45,7 @@ func (cs credsStorage) write(f io.Writer, apiID int, apiHash string) error {
 }
 
 func (cs credsStorage) Load() (int, string, error) {
-	if err := secure.SetPassphrase(cs.passphrase); err != nil {
-		return 0, "", err
-	}
-	f, err := os.Open(cs.filename)
+	f, err := encio.Open(cs.filename)
 	if err != nil {
 		return 0, "", err
 	}
@@ -68,5 +60,5 @@ func (cs credsStorage) read(r io.Reader) (int, string, error) {
 	if err := dec.Decode(&creds); err != nil {
 		return 0, "", err
 	}
-	return int(creds.ApiID), creds.ApiHash.String(), nil
+	return creds.ApiID, creds.ApiHash, nil
 }

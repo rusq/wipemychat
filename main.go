@@ -24,7 +24,6 @@ import (
 
 	"github.com/rusq/wipemychat/internal/mtp"
 	"github.com/rusq/wipemychat/internal/mtp/authflow"
-	"github.com/rusq/wipemychat/internal/sys"
 	"github.com/rusq/wipemychat/internal/tui"
 )
 
@@ -49,6 +48,7 @@ type Params struct {
 	ApiHash      string
 	Phone        string
 	Reset        bool
+	Batch        string
 
 	Version bool
 	Verbose bool
@@ -87,6 +87,7 @@ func parseCmdLine() (Params, error) {
 		flag.StringVar(&p.ApiHash, "api-token", osenv.Secret("APP_HASH", ""), "Telegram API token")
 		flag.StringVar(&p.Phone, "phone", osenv.Value("PHONE", ""), "phone `number` in international format for authentication (optional)")
 		flag.BoolVar(&p.Reset, "reset", false, "reset authentication")
+		flag.StringVar(&p.Batch, "batch", "", "batch mode, specify comma separated chat IDs on the command line")
 
 		flag.BoolVar(&p.Version, "v", false, "print version and exit")
 		flag.BoolVar(&p.Verbose, "verbose", osenv.Value("DEBUG", "") != "", "verbose output")
@@ -144,18 +145,9 @@ func run(ctx context.Context, p Params) error {
 		SessionStorage: &sessStorage,
 	}
 
-	iface, err := sys.FindIface()
-	if err != nil {
-		return err
-	}
-	key, err := sys.IfaceMAC(iface)
-	if err != nil {
-		return err
-	}
-
 	cl, err := mtp.New(p.ApiID, p.ApiHash,
 		mtp.WithAuth(authflow.NewTermAuth(p.Phone)),
-		mtp.WithApiCredsFile(apiCredsFile, key),
+		mtp.WithApiCredsFile(apiCredsFile),
 		mtp.WithMTPOptions(opts),
 		mtp.WithDebug(p.Verbose),
 	)
