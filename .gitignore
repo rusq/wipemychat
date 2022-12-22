@@ -17,3 +17,7 @@
 .vscode
 .idea
 *~
+
+#executable
+wipemychat
+wipemychat.exe

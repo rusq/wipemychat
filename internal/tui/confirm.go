@@ -7,7 +7,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/gotd/td/telegram/query/messages"
 
-	"github.com/rusq/wipemychat/internal/mtp"
+	mtp "github.com/rusq/mtpwrap"
 )
 
 func (app *App) initConfirm() {

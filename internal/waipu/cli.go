@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gotd/td/telegram/query/messages"
-	"github.com/rusq/wipemychat/internal/mtp"
+	mtp "github.com/rusq/mtpwrap"
 )
 
 type Telegramer interface {

@@ -7,25 +7,21 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/gdamore/tcell/v2 v2.5.3
 	github.com/gotd/contrib v0.13.0
-	github.com/gotd/td v0.72.0
+	github.com/gotd/td v0.73.0
 	github.com/joho/godotenv v1.4.0
 	github.com/looplab/fsm v0.3.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/rivo/tview v0.0.0-20221128165837-db36428c92d9
 	github.com/rusq/dlog v1.3.3
-	github.com/rusq/encio v0.1.0
+	github.com/rusq/mtpwrap v0.0.1
 	github.com/rusq/osenv/v2 v2.0.1
-	github.com/rusq/secure v0.0.4
 	github.com/rusq/tracer v1.0.1
 	github.com/schollz/progressbar/v3 v3.12.2
-	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.24.0
-	golang.org/x/term v0.3.0
 )
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
@@ -38,8 +34,9 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/rusq/encio v0.1.0 // indirect
+	github.com/rusq/secure v0.0.4 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	go.opentelemetry.io/otel v1.11.2 // indirect
 	go.opentelemetry.io/otel/trace v1.11.2 // indirect
@@ -49,8 +46,8 @@ require (
 	golang.org/x/net v0.3.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/term v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 	rsc.io/qr v0.2.0 // indirect
 )

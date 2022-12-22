@@ -17,11 +17,11 @@ import (
 	"github.com/gotd/td/telegram/auth"
 	"github.com/mattn/go-colorable"
 	"github.com/rusq/dlog"
+	"github.com/rusq/mtpwrap/authflow"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/rusq/wipemychat/internal/mtp/authflow"
-	"github.com/rusq/wipemychat/internal/mtp/bg"
+	"github.com/gotd/contrib/bg"
 )
 
 const (
