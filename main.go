@@ -23,8 +23,8 @@ import (
 	"github.com/rusq/tracer"
 	"github.com/schollz/progressbar/v3"
 
-	"github.com/rusq/wipemychat/internal/mtp"
-	"github.com/rusq/wipemychat/internal/mtp/authflow"
+	mtp "github.com/rusq/mtpwrap"
+	"github.com/rusq/mtpwrap/authflow"
 	"github.com/rusq/wipemychat/internal/tui"
 	"github.com/rusq/wipemychat/internal/waipu"
 )

@@ -7,7 +7,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
-	"github.com/rusq/wipemychat/internal/mtp"
+	mtp "github.com/rusq/mtpwrap"
 )
 
 const infoText = "Press [Ctrl+Q] or [F10] to quit, [Ctrl+F] or [/] to search chats"

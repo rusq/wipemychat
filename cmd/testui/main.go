@@ -11,7 +11,7 @@ import (
 	"github.com/gotd/td/telegram/query/messages"
 	"github.com/rusq/dlog"
 
-	"github.com/rusq/wipemychat/internal/mtp"
+	mtp "github.com/rusq/mtpwrap"
 	"github.com/rusq/wipemychat/internal/tui"
 )
 

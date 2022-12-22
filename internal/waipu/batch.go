@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/rusq/dlog"
-	"github.com/rusq/wipemychat/internal/mtp"
+	mtp "github.com/rusq/mtpwrap"
 	"github.com/schollz/progressbar/v3"
 )
 
