@@ -21,3 +21,5 @@
 #executable
 wipemychat
 wipemychat.exe
+
+dist/

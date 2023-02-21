@@ -25,6 +25,7 @@ import (
 
 	mtp "github.com/rusq/mtpwrap"
 	"github.com/rusq/mtpwrap/authflow"
+
 	"github.com/rusq/wipemychat/internal/tui"
 	"github.com/rusq/wipemychat/internal/waipu"
 )
@@ -34,12 +35,11 @@ const cacheDirName = "tgmsg_revoker"
 const AppName = "Wipe My Chat for Telegram"
 
 var (
-	version   = "dev"
-	builtOn   = "just now"
-	gitCommit = ""
-	gitRef    = ""
+	version = "dev"
+	date    = "just now"
+	commit  = ""
 
-	versionSig = fmt.Sprintf("%s %s (built %s)", AppName, version, builtOn)
+	versionSig = fmt.Sprintf("%s %s (built %s)", AppName, version, date)
 )
 
 var _ = godotenv.Load() // load environment variables from .env, if present
@@ -90,7 +90,7 @@ type chatIDs []int64
 
 func (c *chatIDs) Set(val string) error {
 	ss := strings.Split(val, ",")
-	var ids = make([]int64, 0, len(ss))
+	ids := make([]int64, 0, len(ss))
 
 	for _, sID := range ss {
 		id, err := strconv.ParseInt(sID, 10, 64)
@@ -108,7 +108,7 @@ func (c *chatIDs) String() string {
 }
 
 func parseCmdLine() (Params, error) {
-	var p = Params{CacheDirName: cacheDirName}
+	p := Params{CacheDirName: cacheDirName}
 	{
 		flag.IntVar(&p.ApiID, "api-id", osenv.Secret("APP_ID", 0), "Telegram API ID")
 		flag.StringVar(&p.ApiHash, "api-token", osenv.Secret("APP_HASH", ""), "Telegram API token")
@@ -132,7 +132,7 @@ func (p *Params) initCacheDir(appName string) error {
 		return err
 	}
 	cacheDir = filepath.Join(cacheDir, appName)
-	if err := os.MkdirAll(cacheDir, 0700); err != nil {
+	if err := os.MkdirAll(cacheDir, 0o700); err != nil {
 		return err
 	}
 	p.cacheDir = cacheDir
@@ -266,7 +266,7 @@ func header(w io.Writer) {
 
 func ver(w io.Writer) {
 	header(w)
-	if gitCommit != "" {
-		fmt.Fprintf(w, "commit: %s ref: %s\n", gitCommit, gitRef)
+	if commit != "" {
+		fmt.Fprintf(w, "commit: %s ref: %s\n", commit)
 	}
 }
