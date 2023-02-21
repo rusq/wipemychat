@@ -267,6 +267,6 @@ func header(w io.Writer) {
 func ver(w io.Writer) {
 	header(w)
 	if commit != "" {
-		fmt.Fprintf(w, "commit: %s ref: %s\n", commit)
+		fmt.Fprintf(w, "commit: %s\n", commit)
 	}
 }
