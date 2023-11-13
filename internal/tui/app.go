@@ -40,7 +40,7 @@ type views struct {
 	tvLog   *tview.TextView
 }
 
-func New(tg waipu.Telegramer) *App {
+func New(ctx context.Context, tg waipu.Telegramer) *App {
 	app := &App{
 		tva: tview.NewApplication(),
 		tg:  tg,
@@ -57,10 +57,10 @@ func New(tg waipu.Telegramer) *App {
 		},
 	}
 
-	app.initMain()
-	app.initFind()
-	app.initConfirm()
-	app.initNothing()
+	app.initMain(ctx)
+	app.initFind(ctx)
+	app.initConfirm(ctx)
+	app.initNothing(ctx)
 
 	app.tva.SetInputCapture(app.handleKeystrokes)
 
@@ -105,13 +105,13 @@ func (app *App) handleKeystrokes(event *tcell.EventKey) *tcell.EventKey {
 }
 
 // cancel sends a evCancelled event.
-func (app *App) cancel() {
-	app.event(evCancelled)
+func (app *App) cancel(ctx context.Context) {
+	app.event(ctx, evCancelled)
 }
 
 // event sends an event to FSM, will return true, if there were no errors.
-func (app *App) event(event string) bool {
-	if err := app.fsm.Event(event); err != nil {
+func (app *App) event(ctx context.Context, event string) bool {
+	if err := app.fsm.Event(ctx, event); err != nil {
 		app.error(err)
 		return false
 	}

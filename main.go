@@ -213,7 +213,7 @@ func run(ctx context.Context, p Params) error {
 		return waipu.Batch(ctx, cl, []int64(p.Batch))
 	} else {
 		// run UI
-		tva := tui.New(cl)
+		tva := tui.New(ctx, cl)
 		if err := tva.Run(ctx, chats); err != nil {
 			return err
 		}

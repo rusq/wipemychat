@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -54,7 +55,7 @@ func initFSM(app *App) *fsm.FSM {
 			{Name: evCancelled, Src: []string{stFetching, stConfirming, stNothing, stSearching}, Dst: stSelecting},
 		},
 		fsm.Callbacks{
-			m.enter("state"): func(e *fsm.Event) {
+			m.enter("state"): func(_ context.Context, e *fsm.Event) {
 				m.app.log.Debugf("*** transition: %q -> %q\n", e.Src, e.Dst)
 				m.app.pages.ShowPage(e.Dst)
 			},
@@ -88,20 +89,20 @@ func (*machine) after(event string) string {
 // States
 //
 
-func (m *machine) hidePage(e *fsm.Event) {
+func (m *machine) hidePage(_ context.Context, e *fsm.Event) {
 	m.app.pages.HidePage(e.Src)
 }
 
-func (m *machine) leaveDeleting(e *fsm.Event) {
+func (m *machine) leaveDeleting(ctx context.Context, e *fsm.Event) {
 	m.cleanUp()
-	m.hidePage(e)
+	m.hidePage(ctx, e)
 }
 
 //
 // Events
 //
 
-func (m *machine) afterCancelled(*fsm.Event) {
+func (m *machine) afterCancelled(context.Context, *fsm.Event) {
 	// clear metadata
 	m.cleanUp()
 	m.app.logf("Operation cancelled")

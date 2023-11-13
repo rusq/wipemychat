@@ -10,14 +10,14 @@ import (
 	mtp "github.com/rusq/mtpwrap"
 )
 
-func (app *App) initConfirm() {
+func (app *App) initConfirm(ctx context.Context) {
 	app.pages.AddPage(stConfirming, app.view.mbConfirm, false, false)
 	app.view.mbConfirm.
 		AddButtons([]string{btnYes, btnNo}).
 		SetDoneFunc(app.handleConfirm).
 		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyESC {
-				app.cancel()
+				app.cancel(ctx)
 				return nil
 			}
 			return event
@@ -25,15 +25,16 @@ func (app *App) initConfirm() {
 }
 
 func (app *App) handleConfirm(_ int, buttonLabel string) {
+	ctx := context.TODO()
 	var err error
 	switch buttonLabel {
 	case btnYes:
-		if !app.event(evConfirmed) {
+		if !app.event(ctx, evConfirmed) {
 			return
 		}
-		err = app.handleDelete()
+		err = app.handleDelete(ctx)
 	case btnNo:
-		app.cancel()
+		app.cancel(ctx)
 	default:
 		err = nil
 	}
@@ -44,8 +45,8 @@ func (app *App) handleConfirm(_ int, buttonLabel string) {
 
 // handleDelete handles the deletion of the messages.  It gets the chat
 // and messages to delete from the FSM Metadata.
-func (app *App) handleDelete() error {
-	defer app.event(evDeleted)
+func (app *App) handleDelete(ctx context.Context) error {
+	defer app.event(ctx, evDeleted)
 	chat, err := metadata[mtp.Entity](app.fsm, metaChat)
 	if err != nil {
 		return fmt.Errorf("chat missing: %s", err)

@@ -10,9 +10,9 @@ import (
 	mtp "github.com/rusq/mtpwrap"
 )
 
-const infoText = "Press [Ctrl+Q] or [F10] to quit, [Ctrl+F] or [/] to search chats"
+const infoText = "Press <Ctrl+Q> or <F10> to quit, <Ctrl+F> or </> to search chats"
 
-func (app *App) initMain() {
+func (app *App) initMain(context.Context) {
 	app.view.lvChats.
 		SetHighlightFullLine(true).
 		SetSelectedBackgroundColor(tcell.Color190).
@@ -64,16 +64,16 @@ func (app *App) populateChatList(ctx context.Context, chats []mtp.Entity) {
 }
 
 func (app *App) handleChats(ctx context.Context, chats []mtp.Entity) {
-	if !app.event(evSelected) {
+	if !app.event(ctx, evSelected) {
 		return
 	}
 
 	selected := chats[app.view.lvChats.GetCurrentItem()]
 	// async fetch is needed so that the tvLog will keep updating.
-	go app.runDelete(selected)
+	go app.runDelete(ctx, selected)
 }
 
-func (app *App) runDelete(selected mtp.Entity) {
+func (app *App) runDelete(ctx context.Context, selected mtp.Entity) {
 	// disable input on lvChats
 	app.view.lvChats.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey { return nil })
 	defer func() {
@@ -95,15 +95,15 @@ func (app *App) runDelete(selected mtp.Entity) {
 	}
 	if err != nil {
 		app.error(err)
-		app.cancel()
+		app.cancel(ctx)
 		return
 	}
 	app.logf("Scan complete, found %d messages", len(msgs))
 
 	if len(msgs) == 0 {
 		// show nothing to do message.
-		if !app.event(evNothingToDo) {
-			app.cancel()
+		if !app.event(ctx, evNothingToDo) {
+			app.cancel(ctx)
 		}
 		return
 	}
@@ -112,22 +112,23 @@ func (app *App) runDelete(selected mtp.Entity) {
 	app.fsm.SetMetadata(metaMessages, msgs)
 	app.view.mbConfirm.SetText(fmt.Sprintf("Found %d messages in %q.  Delete?", len(msgs), selected.GetTitle()))
 
-	if !app.event(evFetched) {
-		app.cancel()
+	if !app.event(ctx, evFetched) {
+		app.cancel(ctx)
 		return
 	}
 }
 
 func (app *App) chatInputCapture(event *tcell.EventKey) *tcell.EventKey {
+	ctx := context.TODO()
 	switch event.Key() {
 	case tcell.KeyCtrlF:
-		if !app.event(evSearch) {
+		if !app.event(ctx, evSearch) {
 			return event
 		}
 	case tcell.KeyRune:
 		switch event.Rune() {
 		case '/':
-			if !app.event(evSearch) {
+			if !app.event(ctx, evSearch) {
 				return event
 			}
 		}
