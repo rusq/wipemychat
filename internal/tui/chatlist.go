@@ -10,7 +10,7 @@ import (
 	mtp "github.com/rusq/mtpwrap"
 )
 
-const infoText = "Press [Ctrl+Q] or [F10] to quit, [Ctrl+F] or [/] to search chats"
+const infoText = "Press <Ctrl+Q> or <F10> to quit, <Ctrl+F> or </> to search chats"
 
 func (app *App) initMain(context.Context) {
 	app.view.lvChats.
