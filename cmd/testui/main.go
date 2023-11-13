@@ -27,9 +27,10 @@ func init() {
 
 func main() {
 	chats := generateChats(fakechats)
-	app := tui.New(FakeTelegram{chats: chats})
+	ctx := context.Background()
+	app := tui.New(ctx, FakeTelegram{chats: chats})
 
-	if err := app.Run(context.Background(), chats); err != nil {
+	if err := app.Run(ctx, chats); err != nil {
 		dlog.Fatal(err)
 	}
 

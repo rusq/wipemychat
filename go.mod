@@ -7,7 +7,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/gotd/td v0.76.0
 	github.com/joho/godotenv v1.5.1
-	github.com/looplab/fsm v0.3.0
+	github.com/looplab/fsm v1.0.1
 	github.com/rivo/tview v0.0.0-20230208211350-7dfff1ce7854
 	github.com/rusq/dlog v1.3.3
 	github.com/rusq/mtpwrap v0.0.4
