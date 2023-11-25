@@ -182,6 +182,9 @@ func run(ctx context.Context, p Params) error {
 		return err
 	}
 
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	dlog.Println("Connecting to telegram . . .")
 	if err := cl.Start(ctx); err != nil {
 		return err
@@ -192,27 +195,24 @@ func run(ctx context.Context, p Params) error {
 		}
 	}()
 
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
-	done, finished := fakeProgress("Getting chats . . .", 0)
-	chats, err := cl.GetChats(ctx)
-	close(done)
-	<-finished
-	if err != nil {
-		return err
-	}
-	sort.Slice(chats, func(i, j int) bool {
-		return chats[i].GetTitle() < chats[j].GetTitle()
-	})
-	dlog.Printf("got %d chats", len(chats))
-
 	if p.List {
 		return waipu.List(ctx, os.Stdout, cl)
 	} else if len(p.Batch) > 0 {
 		return waipu.Batch(ctx, cl, []int64(p.Batch))
 	} else {
 		// run UI
+		done, finished := fakeProgress("Getting chats . . .", 0)
+		chats, err := cl.GetChats(ctx)
+		close(done)
+		<-finished
+		if err != nil {
+			return err
+		}
+		sort.Slice(chats, func(i, j int) bool {
+			return chats[i].GetTitle() < chats[j].GetTitle()
+		})
+		dlog.Printf("got %d chats", len(chats))
+
 		tva := tui.New(ctx, cl)
 		if err := tva.Run(ctx, chats); err != nil {
 			return err
