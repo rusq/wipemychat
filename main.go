@@ -160,11 +160,10 @@ func run(ctx context.Context, p Params) error {
 	sessStorage := session.FileStorage{Path: filepath.Join(p.cacheDir, "session.dat")}
 	apiCredsFile := filepath.Join(p.cacheDir, "telegram.dat")
 	if p.Reset {
-		if err := unlink(sessStorage.Path); err != nil {
-			return err
-		}
-		if err := unlink(apiCredsFile); err != nil {
-			return err
+		for _, file := range []string{sessStorage.Path, apiCredsFile} {
+			if err := unlink(file); err != nil {
+				return err
+			}
 		}
 	}
 

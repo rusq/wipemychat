@@ -40,6 +40,18 @@ You can also run the deletion from script.  Follow these steps:
    wipemychat -wipe 12345,56789
    ```
 
+## Resetting login details
+
+If you accidentally entered the wrong login details, or App Hash and App
+Secret, you can reset them by running:
+
+```
+wipemychat -reset
+```
+
+This deletes both files with secrets, and you will be asked to authenticate
+again.
+
 ## Licence
 GNU Public Licence 3.0, see [LICENCE][2]
 
