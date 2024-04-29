@@ -33,4 +33,5 @@ dist:
 	goreleaser check
 	goreleaser release --snapshot --rm-dist -p 2
 .PHONY: dist
+
 cleanall: clean cleanfiles
