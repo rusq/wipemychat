@@ -10,7 +10,7 @@ require (
 	github.com/looplab/fsm v1.0.1
 	github.com/rivo/tview v0.0.0-20240426173458-c766eefb3803
 	github.com/rusq/dlog v1.4.0
-	github.com/rusq/mtpwrap v0.1.0
+	github.com/rusq/mtpwrap v0.0.5
 	github.com/rusq/osenv/v2 v2.0.1
 	github.com/rusq/tracer v1.0.1
 	github.com/schollz/progressbar/v3 v3.14.2
