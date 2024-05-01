@@ -171,7 +171,7 @@ func run(ctx context.Context, p Params) error {
 		SessionStorage: &sessStorage,
 	}
 
-	cl, err := mtp.New(p.ApiID, p.ApiHash,
+	cl, err := mtp.New(ctx, p.ApiID, p.ApiHash,
 		mtp.WithAuth(authflow.NewTermAuth(p.Phone)),
 		mtp.WithApiCredsFile(apiCredsFile),
 		mtp.WithMTPOptions(opts),
