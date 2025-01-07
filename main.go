@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/gotd/td/session"
 	"github.com/gotd/td/telegram"
 	"github.com/joho/godotenv"
 	"github.com/rusq/dlog"
@@ -26,6 +25,7 @@ import (
 	mtp "github.com/rusq/mtpwrap"
 	"github.com/rusq/mtpwrap/authflow"
 
+	"github.com/rusq/wipemychat/internal/session"
 	"github.com/rusq/wipemychat/internal/tui"
 	"github.com/rusq/wipemychat/internal/waipu"
 )
@@ -165,6 +165,8 @@ func run(ctx context.Context, p Params) error {
 				return err
 			}
 		}
+		fmt.Fprintln(os.Stdout, "credentials were removed")
+		os.Exit(0)
 	}
 
 	opts := telegram.Options{
