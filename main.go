@@ -51,9 +51,12 @@ type Params struct {
 	ApiHash string
 	Phone   string
 
+	// Reset requests removal of the session and API credentials files.
 	Reset bool
-	List  bool
+	// Logout requests removal of the session file.
+	Logout bool
 
+	List  bool
 	Batch chatIDs
 
 	Version bool
@@ -110,13 +113,20 @@ func (c *chatIDs) String() string {
 func parseCmdLine() (Params, error) {
 	p := Params{CacheDirName: cacheDirName}
 	{
+		// auth options
 		flag.IntVar(&p.ApiID, "api-id", osenv.Secret("APP_ID", 0), "Telegram API ID")
 		flag.StringVar(&p.ApiHash, "api-token", osenv.Secret("APP_HASH", ""), "Telegram API token")
 		flag.StringVar(&p.Phone, "phone", osenv.Value("PHONE", ""), "phone `number` in international format for authentication (optional)")
-		flag.BoolVar(&p.Reset, "reset", false, "reset authentication")
+
+		// reset options
+		flag.BoolVar(&p.Reset, "reset", false, "reset authentication (logout and remove credentials)")
+		flag.BoolVar(&p.Logout, "logout", false, "logout current account, use this to login as another user with the same API ID")
+
+		// batch mode
 		flag.BoolVar(&p.List, "list", false, "list channels and their IDs")
 		flag.Var(&p.Batch, "wipe", "batch mode, specify comma separated chat IDs on the command line")
 
+		// sundry
 		flag.BoolVar(&p.Version, "v", false, "print version and exit")
 		flag.BoolVar(&p.Verbose, "verbose", osenv.Value("DEBUG", "") != "", "verbose output")
 		flag.StringVar(&p.Trace, "trace", osenv.Value("TRACE_FILE", ""), "trace `filename`")
@@ -157,15 +167,33 @@ func run(ctx context.Context, p Params) error {
 
 	header(os.Stdout)
 
+	sessfile := filepath.Join(p.cacheDir, "session.dat")
+	if migrated, err := migratev120(sessfile); err != nil {
+		return err
+	} else if migrated {
+		fmt.Fprintln(os.Stdout, "session file was migrated to new format")
+	}
+
 	sessStorage := session.FileStorage{Path: filepath.Join(p.cacheDir, "session.dat")}
 	apiCredsFile := filepath.Join(p.cacheDir, "telegram.dat")
+	if p.Logout {
+		if err := unlink(sessStorage.Path); err != nil {
+			return err
+		} else {
+			fmt.Fprintln(os.Stdout, "you were logged out")
+		}
+		os.Exit(0)
+	}
 	if p.Reset {
 		for _, file := range []string{sessStorage.Path, apiCredsFile} {
 			if err := unlink(file); err != nil {
-				return err
+				if os.IsNotExist(err) {
+					continue
+				}
+				return fmt.Errorf("error deleting %s: %w", file, err)
 			}
 		}
-		fmt.Fprintln(os.Stdout, "credentials were removed")
+		fmt.Fprintln(os.Stdout, "logged out and credentials removed")
 		os.Exit(0)
 	}
 

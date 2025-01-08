@@ -21,8 +21,7 @@ You will need:
 - Telegram API ID
 - Telegram API HASH
 
-The program provides easy to follow instructions on how to get
-those.
+The program provides easy to follow instructions on how to get those.
 
 To authenticate, you will use your Telegram Account phone number and the code,
 that will be sent to you in-app or a text message (SMS).
@@ -40,17 +39,25 @@ You can also run the deletion from script.  Follow these steps:
    wipemychat -wipe 12345,56789
    ```
 
-## Resetting login details
+### Logging out
 
-If you accidentally entered the wrong login details, or App Hash and App
-Secret, you can reset them by running:
+If you need to log in under a different account (or phone number), you can
+logout without deleting the application credentials by running:
+```
+wipemychat -logout
+```
+
+### Complete reset
+
+If you need to completely reset the authentication, for example, if you
+accidentally entered the wrong login details, or App Hash and App Secret, run:
 
 ```
 wipemychat -reset
 ```
 
-This deletes both files with secrets, and you will be asked to authenticate
-again.
+This deletes both files: session and application credentials. You will be asked
+to authenticate again.
 
 ## Licence
 GNU Public Licence 3.0, see [LICENCE][2]
