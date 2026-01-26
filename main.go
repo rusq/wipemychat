@@ -211,9 +211,6 @@ func run(ctx context.Context, p Params) error {
 		return err
 	}
 
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
 	dlog.Println("Connecting to telegram . . .")
 	if err := cl.Start(ctx); err != nil {
 		return err
@@ -223,6 +220,9 @@ func run(ctx context.Context, p Params) error {
 			dlog.Printf("stop error: %s", err)
 		}
 	}()
+
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	if p.List {
 		return waipu.List(ctx, os.Stdout, cl)
